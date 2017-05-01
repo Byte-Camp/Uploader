@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cwd=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/src
+echo "Launching Byte Camp USB Uploader"
+python $cwd/app.py
