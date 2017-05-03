@@ -65,16 +65,25 @@ def uploadFile():
     filetype_error = None; error = None
     #if (allowedFile(file.filename)):
     filename = secure_filename(file.filename)
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(filepath)
+    if (filename[-4:] == '.avi'):
+	    subprocess.call(['ffmpeg','-i',filepath,'-c:a','aac','-b:a','128k','-c:v','libx264','-strict','-2','-crf','23',filepath[:-4]+'.mp4','-y'])
+	    filename = filename[:-4]+'.mp4'
+	    subprocess.call(['ffmpeg','-i',filepath[:-4]+'.mp4','-ss','00:00:00','-vframes','1',filepath[:-4]+'.png','-y'])
+	    thumb = filename[:-4]+'.png'
     files.append(filename)
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     return json.dumps({'files':files})
 
 
 @app.route('/removeFile', methods=['POST'])
 def removeFile():
 	filename = request.get_json()
-	os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
+	filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+	if (filename[-4:] == '.mp4'):
+		os.remove(filepath[:-4]+'.avi')
+		os.remove(filepath[:-4]+'.png')
+	os.remove(filepath)
 	#shutil.rmtree('/media/adar/BYTECAMP/data/projects/')
     #shutil.copytree(app.config['UPLOAD_FOLDER'], '/media/adar/BYTECAMP/data/projects/', symlinks=False, ignore=None)
 	return json.dumps({'files':filename})
