@@ -2,9 +2,6 @@ body {
     background-color:#ffffa0;
     padding:0px;
 }
-h4 {
-    display:inline;
-}
 
 h5 {
     display:inline;
@@ -23,11 +20,37 @@ h5 {
 }
 
 .uploaded {
+    position:relative;
+    height:64px;
     background-color:green;
+}
+
+.uploaded-file {
+    display:inline;
+    position:absolute;
+    left:64px;
+    padding:10px;
+}
+
+.uploaded-student {
+    position:absolute;
+    left:64px;
+    bottom:0px;
+    padding:10px;
+    padding-bottom:5px;
 }
 
 .uploaded-remove {
     position:absolute;
     right:0px;
+    top:0px;
     background-color:red;
+}
+
+.thumb {
+    position:absolute;
+    left:0px;
+    top:0px;
+    width:64px;
+    height:64px;
 }

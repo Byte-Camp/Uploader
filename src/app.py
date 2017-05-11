@@ -8,9 +8,13 @@ from werkzeug.utils import secure_filename
 # Initialize the Flask application
 cwd = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 UPLOAD_FOLDER = cwd+'/static/files'
+try:
+	shutil.rmtree(UPLOAD_FOLDER)
+except Exception:
+	pass
+
 ALLOWED_EXTENSIONS = set([])
 app = Flask(__name__, template_folder='html')
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 #app.config['MYSQL_USER'] = 'bytecamp_test2'
 #app.config['MYSQL_PASSWORD'] = '18888082983Unicorn'
@@ -22,10 +26,19 @@ disk = ""; size = ""; used = ""; available = ""; percent_used = ""
 mountpoint = ""; filename = "Browse..."; files = []; player_loaded = "no"
 error = True
 
-def allowed_file(filename):
+def allowedFile(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def avi2mp4(filename, filepath):
+	subprocess.call(['ffmpeg','-i',filepath,'-c:a','aac','-b:a','128k','-c:v','libx264','-strict','-2','-crf','23',filepath[:-4]+'.mp4','-y'])
+	os.remove(filepath)
+	filename = filename[:-4]+'.mp4'
+	filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+	return filename, filepath
+
+def makeThumb(filepath):
+	subprocess.call(['ffmpeg','-i',filepath,'-ss','00:00:00','-vframes','1',filepath[:-4]+'.jpg','-y'])
 
 @app.route('/')
 def startUploader():
@@ -51,6 +64,16 @@ def startUploader():
 				os.path.isfile('/Volumes/BYTECAMP/Byte Camp Player.html')):
 				global player_loaded
 				player_loaded = "yes"
+
+			try:
+				shutil.copytree('/media/adar/BYTECAMP/data/projects', UPLOAD_FOLDER, symlinks=False, ignore=None)
+			except Exception:
+				try:
+					shutil.copytree('/Volumes/BYTECAMP/data/projects', UPLOAD_FOLDER, symlinks=False, ignore=None)
+				except Exception:
+					pass
+			app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 			break;
 		i += 1
 	return render_template('index.html',disk=disk, disk_size=size, disk_avail=available, 
@@ -58,22 +81,31 @@ def startUploader():
 										filename=filename, error=error, error_type=usb_error)
 
 
+@app.route('/showContents', methods=['GET'])
+def showContents():
+	on_usb = os.listdir(app.config['UPLOAD_FOLDER'])
+	return json.dumps(on_usb)
+
+
 @app.route('/uploadFile', methods=['POST'])
 def uploadFile():
     file = request.files['file']
+    student = request.form['student']
     global filename; global error
     filetype_error = None; error = None
     #if (allowedFile(file.filename)):
     filename = secure_filename(file.filename)
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(filepath)
-    if (filename[-4:] == '.avi'):
-	    subprocess.call(['ffmpeg','-i',filepath,'-c:a','aac','-b:a','128k','-c:v','libx264','-strict','-2','-crf','23',filepath[:-4]+'.mp4','-y'])
-	    filename = filename[:-4]+'.mp4'
-	    subprocess.call(['ffmpeg','-i',filepath[:-4]+'.mp4','-ss','00:00:00','-vframes','1',filepath[:-4]+'.png','-y'])
-	    thumb = filename[:-4]+'.png'
+
+    if (filename[-4:] == '.mp4'):
+    	makeThumb(filepath)
+    elif (filename[-4:] == '.avi'):
+    	filename, filepath = avi2mp4(filename, filepath)
+    	makeThumb(filepath)
+
     files.append(filename)
-    return json.dumps({'files':files})
+    return json.dumps([files, student])
 
 
 @app.route('/removeFile', methods=['POST'])
@@ -81,8 +113,7 @@ def removeFile():
 	filename = request.get_json()
 	filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 	if (filename[-4:] == '.mp4'):
-		os.remove(filepath[:-4]+'.avi')
-		os.remove(filepath[:-4]+'.png')
+		os.remove(filepath[:-4]+'.jpg')
 	os.remove(filepath)
 	#shutil.rmtree('/media/adar/BYTECAMP/data/projects/')
     #shutil.copytree(app.config['UPLOAD_FOLDER'], '/media/adar/BYTECAMP/data/projects/', symlinks=False, ignore=None)
