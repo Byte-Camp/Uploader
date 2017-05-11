@@ -38,8 +38,9 @@
                     <div class="form-group classWithPad">
                         <h5>Please choose your camp and find your work:</h5>
                         <br><br>
-                        <div class="input-group col-xs-10 col-center">
-                            <input form="upload-file" class="col-xs-6 col-center" type="file" name="file" id="file" multiple />
+                        <div class="input-group col-xs-10 col-center text-center">
+                            <label for="file"><a href="#">Select file</a></label>
+                            <input form="upload-file" class="col-xs-6 col-center hidden" type="file" name="file" id="file" multiple />
                         </div>
                     </div>
 
@@ -60,7 +61,7 @@
 
                     <div class="form-group classWithPad">
                         <h5>Preview USB Player:</h5>
-                        <button class="settings" name="preview" type="submit" disabled>PREVIEW</button>
+                        <button class="settings" name="preview" id="preview">PREVIEW</button>
                     </div>
                 </div>
             </div>

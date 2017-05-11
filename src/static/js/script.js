@@ -6,12 +6,13 @@ function showContents(student=''){
         contentType: 'application/json;charset=UTF-8',
         processData: false,
         success: function(response){
-            var obj = JSON.parse(response)
-            var arr = $.map(obj, function(el) { return el });
+            var obj = JSON.parse(response);
+            var projects = $.map(obj, function(el) { return el });
+            var students = projects.splice(0, projects.length/2);
             document.getElementById('uploaded').innerHTML = '';
-            for (i=1;i<arr.length; i++){
-                if (arr[i].substring(arr[i].length - 4) != '.jpg'){
-                    document.getElementById('uploaded').innerHTML += '<div class="uploaded" id="file'+(i+1)+'"><img class="thumb" src="'+UPLOAD_FOLDER+arr[i].substring(0, arr[i].length-4)+'.jpg"><h4 class="uploaded-file">'+arr[i]+'</h4><div class="uploaded-student">'+student+'</div><button class="uploaded-remove" type="button" onclick="ajax_remove(\''+arr[i]+'\', \'file'+(i+1)+'\')">[x]</button></div>';    
+            for (i=1;i<projects.length; i++){
+                if (projects[i].substring(projects[i].length - 4) != '.jpg'){
+                    document.getElementById('uploaded').innerHTML += '<div class="uploaded" id="file'+(i+1)+'"><img class="thumb" src="'+UPLOAD_FOLDER+students[i]+'-'+projects[i].substring(0, projects[i].length-4)+'.jpg"><h4 class="uploaded-file">'+projects[i].substring(0, projects[i].length-4)+'</h4><div class="uploaded-student">'+students[i]+'</div><button class="uploaded-remove" type="button" onclick="ajax_remove(\''+students[i]+'-'+projects[i]+'\', \'file'+(i+1)+'\')">[x]</button></div>';    
                 }
             }
         },
@@ -60,3 +61,19 @@ function ajax_remove(data, id){
         }
     });
 }
+
+$("#preview").click(function() {
+    $.ajax({
+        type: "GET",
+        url: "/preview",
+        contentType: false,
+        dataType: 'json',
+        processData: false,
+        success: function(response) {
+            console.log(response);
+        },
+        error: function(result) {
+            alert('error');
+        }
+    });
+});

@@ -24,7 +24,7 @@ app = Flask(__name__, template_folder='html')
 
 disk = ""; size = ""; used = ""; available = ""; percent_used = ""
 mountpoint = ""; filename = "Browse..."; files = []; player_loaded = "no"
-error = True
+error = True; usb_path='';
 
 def allowedFile(filename):
     return '.' in filename and \
@@ -59,19 +59,17 @@ def startUploader():
 			size = int(round(int(x[1])/1000.0))
 			used = int(round(int(x[2])/1000.0))
 			available = int(round(int(x[3])/1000.0))
-			
-			if (os.path.isfile('/media/adar/BYTECAMP/Byte Camp Player.html') or
-				os.path.isfile('/Volumes/BYTECAMP/Byte Camp Player.html')):
-				global player_loaded
-				player_loaded = "yes"
-
+			global player_loaded; global usb_path
+			if (os.path.isfile('/media/adar/BYTECAMP/Byte Camp Player.html')):
+				player_loaded = 'yes'
+				usb_path = '/media/adar/BYTECAMP/'
+			elif (os.path.isfile('/Volumes/BYTECAMP/Byte Camp Player.html')):
+				player_loaded = 'yes'
+				usb_path = '/Volumes/BYTECAMP/'
 			try:
-				shutil.copytree('/media/adar/BYTECAMP/data/projects', UPLOAD_FOLDER, symlinks=False, ignore=None)
+				shutil.copytree(usb_path+'data/projects', UPLOAD_FOLDER, symlinks=False, ignore=None)
 			except Exception:
-				try:
-					shutil.copytree('/Volumes/BYTECAMP/data/projects', UPLOAD_FOLDER, symlinks=False, ignore=None)
-				except Exception:
-					pass
+				pass
 			app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 			break;
@@ -84,7 +82,16 @@ def startUploader():
 @app.route('/showContents', methods=['GET'])
 def showContents():
 	on_usb = os.listdir(app.config['UPLOAD_FOLDER'])
-	return json.dumps(on_usb)
+	students = []; projects = []; j = '-'
+	for i in range(len(on_usb)):
+		students.append((on_usb[i].split('-')[0]).strip())
+		try:
+			projects.append((j.join(on_usb[i].split('-')[1:])).strip())
+		except Exception:
+			pass
+		if (not os.path.isfile(app.config['UPLOAD_FOLDER']+students[i]+j+projects[i])):
+			os.rename(app.config['UPLOAD_FOLDER']+'/'+on_usb[i], app.config['UPLOAD_FOLDER']+'/'+students[i]+j+projects[i])
+	return json.dumps([students, projects])
 
 
 @app.route('/uploadFile', methods=['POST'])
@@ -94,7 +101,7 @@ def uploadFile():
     global filename; global error
     filetype_error = None; error = None
     #if (allowedFile(file.filename)):
-    filename = secure_filename(file.filename)
+    filename = student+'-'+(secure_filename(file.filename)).replace('_','')
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(filepath)
 
@@ -112,13 +119,19 @@ def uploadFile():
 def removeFile():
 	filename = request.get_json()
 	filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+	print filepath
 	if (filename[-4:] == '.mp4'):
 		os.remove(filepath[:-4]+'.jpg')
 	os.remove(filepath)
-	#shutil.rmtree('/media/adar/BYTECAMP/data/projects/')
-    #shutil.copytree(app.config['UPLOAD_FOLDER'], '/media/adar/BYTECAMP/data/projects/', symlinks=False, ignore=None)
 	return json.dumps({'files':filename})
 
+
+@app.route('/preview', methods=['GET'])
+def preview():
+	shutil.rmtree(usb_path+'data/projects/')
+	shutil.copytree(app.config['UPLOAD_FOLDER'], usb_path+'data/projects/', symlinks=False, ignore=None)
+	webbrowser.open_new("file://"+usb_path+"Byte Camp Player.html")
+	return json.dumps('success')
 
 if __name__=="__main__":
 	app.secret_key = 'super secret key'
