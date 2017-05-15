@@ -1,5 +1,5 @@
 body {
-    background-color:#ffffa0;
+    background-color:#ffffcc;
     padding:0px;
 }
 
@@ -22,7 +22,8 @@ h5 {
 .uploaded {
     position:relative;
     height:64px;
-    background-color:green;
+    color:#4f8a10;
+    background-color:#dff2bf;
 }
 
 .uploaded-file {
@@ -42,13 +43,19 @@ h5 {
 
 .uploaded-remove {
     position:absolute;
+    border-bottom-left-radius:25%;
+    width:25px;
+    height:25px;
+    text-align:center;
     right:0px;
     top:0px;
-    background-color:red;
+    color:#d8000c;
+    background-color:#ffbaba;
 }
 
 .thumb {
     position:absolute;
+    background-color:#000;
     left:0px;
     top:0px;
     width:64px;

@@ -39,6 +39,40 @@ def avi2mp4(filename, filepath):
 
 def makeThumb(filepath):
 	subprocess.call(['ffmpeg','-i',filepath,'-ss','00:00:00','-vframes','1',filepath[:-4]+'.jpg','-y'])
+	return True
+
+def getThumb(filepath, upload):
+	file_ext = -4;
+	if (filepath[file_ext] != '.'):
+		file_ext = None;
+	shutil.copyfile(cwd+'/static/thumbnails/'+upload+'.jpg', filepath[:file_ext]+'.jpg')
+	return True
+
+def upload(upload):
+	files = request.files.getlist(upload)
+	student = request.form['student']; name = student+'-'
+	global filename; global error; directory = '/'
+	filetype_error = None; error = None; thumb = None;
+	dir_temp = request.files[upload].filename.split('/')
+	if (len(dir_temp) > 1):
+		directory += name+dir_temp[0]
+		name = ''
+		if (not os.path.exists(app.config['UPLOAD_FOLDER']+directory)):
+			os.makedirs(app.config['UPLOAD_FOLDER']+directory)
+		thumb = getThumb(app.config['UPLOAD_FOLDER']+directory, 'directory')
+	for file in files:
+		file.filename = file.filename.replace(dir_temp[0]+'/', '')
+		filename = name+(secure_filename(file.filename)).replace('_','')
+		dirpath = os.path.join(app.config['UPLOAD_FOLDER']+directory, filename)
+		if (filename[-4:] == '.mp4'):
+			thumb = makeThumb(dirpath)
+		elif (filename[-4:] == '.avi'):
+			filename, dirpath = avi2mp4(filename, dirpath)
+			thumb = makeThumb(dirpath)
+		elif (filename[-8:] == '.scratch'):
+			thumb = getThumb(dirpath, 'scratch')
+		file.save(dirpath)
+	if (not thumb): thumb = getThumb(dirpath, 'default')
 
 @app.route('/')
 def startUploader():
@@ -96,34 +130,26 @@ def showContents():
 
 @app.route('/uploadFile', methods=['POST'])
 def uploadFile():
-    file = request.files['file']
-    student = request.form['student']
-    global filename; global error
-    filetype_error = None; error = None
-    #if (allowedFile(file.filename)):
-    filename = student+'-'+(secure_filename(file.filename)).replace('_','')
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    file.save(filepath)
+    upload('file')
+    return json.dumps('success uploading file')
 
-    if (filename[-4:] == '.mp4'):
-    	makeThumb(filepath)
-    elif (filename[-4:] == '.avi'):
-    	filename, filepath = avi2mp4(filename, filepath)
-    	makeThumb(filepath)
 
-    files.append(filename)
-    return json.dumps([files, student])
+@app.route('/uploadDirectory', methods=['POST'])
+def uploadDirectory():
+    upload('dir')
+    return json.dumps('success uploading directory')
 
 
 @app.route('/removeFile', methods=['POST'])
 def removeFile():
-	filename = request.get_json()
+	filename = request.get_json(); file_ext = -4;
 	filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-	print filepath
-	if (filename[-4:] == '.mp4'):
-		os.remove(filepath[:-4]+'.jpg')
-	os.remove(filepath)
-	return json.dumps({'files':filename})
+	if (filename[file_ext] != '.'):
+		shutil.rmtree(filepath); file_ext = None;
+	else:
+		os.remove(filepath)
+	os.remove(filepath[:file_ext]+'.jpg')
+	return json.dumps('success removing file')
 
 
 @app.route('/preview', methods=['GET'])
@@ -131,7 +157,7 @@ def preview():
 	shutil.rmtree(usb_path+'data/projects/')
 	shutil.copytree(app.config['UPLOAD_FOLDER'], usb_path+'data/projects/', symlinks=False, ignore=None)
 	webbrowser.open_new("file://"+usb_path+"Byte Camp Player.html")
-	return json.dumps('success')
+	return json.dumps('success loading preview')
 
 if __name__=="__main__":
 	app.secret_key = 'super secret key'

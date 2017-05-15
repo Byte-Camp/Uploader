@@ -37,10 +37,13 @@
 
                     <div class="form-group classWithPad">
                         <h5>Please choose your camp and find your work:</h5>
-                        <br><br>
+                        <br><br><br>
                         <div class="input-group col-xs-10 col-center text-center">
-                            <label for="file"><a href="#">Select file</a></label>
+                            <label for="file"><a>Select file</a></label>
+                            <br><br>
+                            <label for="dir"><a>Select folder</a></label>
                             <input form="upload-file" class="col-xs-6 col-center hidden" type="file" name="file" id="file" multiple />
+                            <input form="upload-file" class="col-xs-6 col-center hidden" type="file" name="dir" id="dir" webkitdirectory directory mozdirectory/>
                         </div>
                     </div>
 

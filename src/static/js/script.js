@@ -1,6 +1,6 @@
 UPLOAD_FOLDER = "../static/files/"
 
-function showContents(student=''){
+function showContents(){
     $.ajax({ url: "/showContents",
         type: 'GET',
         contentType: 'application/json;charset=UTF-8',
@@ -9,15 +9,16 @@ function showContents(student=''){
             var obj = JSON.parse(response);
             var projects = $.map(obj, function(el) { return el });
             var students = projects.splice(0, projects.length/2);
-            document.getElementById('uploaded').innerHTML = '';
-            for (i=1;i<projects.length; i++){
-                if (projects[i].substring(projects[i].length - 4) != '.jpg'){
-                    document.getElementById('uploaded').innerHTML += '<div class="uploaded" id="file'+(i+1)+'"><img class="thumb" src="'+UPLOAD_FOLDER+students[i]+'-'+projects[i].substring(0, projects[i].length-4)+'.jpg"><h4 class="uploaded-file">'+projects[i].substring(0, projects[i].length-4)+'</h4><div class="uploaded-student">'+students[i]+'</div><button class="uploaded-remove" type="button" onclick="ajax_remove(\''+students[i]+'-'+projects[i]+'\', \'file'+(i+1)+'\')">[x]</button></div>';    
+            document.getElementById('uploaded').innerHTML = ''; file_ext = 4;
+            for (i=0;i<projects.length; i++){
+                if (projects[i].substring(projects[i].length - 4) != '.jpg'){              //file id for remove                         thumbnail                                                                                                        uploaded file or directory                                                       students name
+                    if (projects[i].substring(projects[i].length - 4, projects[i].length - 3) != '.') { file_ext = 0; }
+                    document.getElementById('uploaded').innerHTML += '<div class="uploaded" id="file'+(i+1)+'"><img class="thumb" src="'+UPLOAD_FOLDER+students[i]+'-'+projects[i].substring(0, projects[i].length-file_ext)+'.jpg"><h4 class="uploaded-file">'+projects[i]+'</h4><div class="uploaded-student">'+students[i]+'</div><button class="uploaded-remove" type="button" onclick="ajax_remove(\''+students[i]+'-'+projects[i]+'\', \'file'+(i+1)+'\')">X</button></div>';    
                 }
             }
         },
         error: function(error){
-            alert("error");
+            alert(error);
         }
     });
 }
@@ -27,10 +28,12 @@ $(document).ready(function(){
 });
 
 $(document).on('change', ':file', function() {
+    var url = '/uploadFile'
     var form_data = new FormData($('#upload-file')[0]);
+    if (this.id == 'dir'){ url = '/uploadDirectory' }
     $.ajax({
         type: 'POST',
-        url: '/uploadFile',
+        url: url,
         data: form_data,
         contentType: false,
         dataType: 'json',
@@ -38,7 +41,9 @@ $(document).on('change', ':file', function() {
         //cache: false,
         //async: false,
         success: function(response) {
-            showContents(response[1]);
+            showContents();
+            //document.getElementById("upload-file").reset();
+            console.log(response);
         },
         error: function(error){
         	alert(error);
@@ -55,6 +60,7 @@ function ajax_remove(data, id){
         processData: false,
         success: function(response) {
             showContents();
+            console.log(response);
         },
         error: function(error){
         	alert(error);
@@ -72,8 +78,8 @@ $("#preview").click(function() {
         success: function(response) {
             console.log(response);
         },
-        error: function(result) {
-            alert('error');
+        error: function(error) {
+            alert(error);
         }
     });
 });
