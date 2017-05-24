@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Byte Camp - Summer Camps 2016</title>
+<script type="text/javascript" src="data/res/swfobject.js">
+</script>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<script type="text/javascript">
+var pid = 0;
+var prog = "";
+var loc = "";
+var web = "";
+	
+	var ua = navigator.userAgent.toLowerCase(); 
+	  if (ua.indexOf('firefox') == -1) { 
+		//if (ua.indexOf('chrome') > -1) {
+		 // alert("1") // Chrome
+		//} else {
+		  alert("Recent versions of Safari do not support our Byte-o-Vision viewer.  Please view in Firefox if you are experiencing problems.") // Safari
+		//}
+	  }
+
+
+	var flashvars = {};
+	var attributes = {};
+	var params = {
+		wmode: "transparent"
+	};
+	list = "projects"
+	
+	function gotoMyURL() {
+		window.location.href = 'http://my.bytecamp.ca/'+web;
+	}
+	
+	function flash_java(){
+	document.getElementById("left").innerHTML ="<br><br><center>We recommend using a recent version of <a href=\"https://www.mozilla.org/en-US/firefox/new/\">Firefox</a> to view these projects.</center>";
+	}
+
+	function show_blend(path) 
+	{
+		// burster plugin no longer supported... other ideas??
+	}
+	
+	function show_video(path) 
+	{
+		document.getElementById("mp4Player").innerHTML = "<video width='530' autoplay controls><source src=\""+path+"\" type ='video/mp4'>Your browser does not support the video tag</video>"
+	}	
+	
+	function show_scratch(path) 
+	{	
+		ReadFile(path);
+		document.getElementById("sb2Player").style.display = "block";
+		execGreenFlag();	
+
+	}	
+	
+	
+	
+	function show_html(path) 
+	{	
+		document.getElementById("htmlPlayer").style.display = "block";
+		document.getElementById("htmlPlayer").innerHTML = "<iframe width='530' src=\""+path+"\"/ height='100%'  sandbox='allow-same-origin allow-scripts allow-forms'>"
+	}		
+	
+	function hide()
+	{
+		document.getElementById("mp4Player").innerHTML = "";
+		document.getElementById("blender").innerHTML = "";
+		document.getElementById("htmlPlayer").style.display = "none";
+		if(document.getElementById("sb2Player").style.display == "block") {
+			stopAll(); //stop sb2 file;
+		} 
+		document.getElementById("sb2Player").style.display = "none";
+	}
+	
+	function newSWF(path,udown)
+	{
+		flash_java();
+		str = path.toLowerCase();
+		hide();
+		//alert(str.substring(str.length-3));
+		document.getElementById("left").style.display = "none";
+		if(str.substring(str.length-3) == "swf") {
+			swfobject.embedSWF("data/"+list+"/"+path, "left", "540", "400", "7.0.0");
+		} else if(str.substring(str.length-5) == "blend") {
+			show_blend("data/"+list+"/"+path);
+		} else if (str.substring(str.length-3) == "sb2") {
+			show_scratch("data/"+list+"/"+path);
+		} else if (str.substring(str.length-4) == "html") {
+			show_html("data/"+list+"/"+path);
+		} else  {
+			show_video("data/"+list+"/"+path);	
+		}
+		
+		myImage = new Image()
+	} 
+	
+
+	function menuList(div_input) {
+		
+		document.getElementById("games").style.display = "none";
+		document.getElementById("3D").style.display = "none";
+		document.getElementById("clay").style.display = "none"
+		document.getElementById("projects").style.display = "none";
+		document.getElementById("3Dgame").style.display = "none";
+		document.getElementById("musicvid").style.display = "none";
+		document.getElementById("2Dtablet").style.display = "none";
+		
+		document.getElementById(div_input).style.display = "inline";
+
+		document.getElementById("clay_button").src = "data/res/claybutton.png";			
+		document.getElementById("games_button").src = "data/res/gamesbutton.png";			
+		document.getElementById("projects_button").src = "data/res/projectsbutton.png";			
+		document.getElementById("3D_button").src = "data/res/3Dbutton.png";			
+		document.getElementById("musicvid_button").src = "data/res/musicvidbutton.png";			
+		document.getElementById("3Dgame_button").src = "data/res/3Dgamebutton.png";		
+		document.getElementById("2Dtablet_button").src = "data/res/2Dtabletbutton.png";	
+		
+		document.getElementById(div_input+"_button").src = "data/res/"+div_input+"button_down.png";
+		
+		list = div_input;
+		if (div_input == "musicvid") list = "musicvideo";
+		if (div_input == "clay") list = "claymation";
+		if (div_input == "3D") list = "3Danimation";
+		if (div_input == "games") list = "2Dgame";
+	
+	
+		}
+
+		
+	</script>
+
+
+<script type="text/javascript" src='data/res/scratch-js/js/sb2.js'></script>
+<script type="text/javascript" src='data/res/scratch-js/js/ZipFile.complete.js'></script>
+<script type="text/javascript" src='data/res/scratch-js/js/jquery.min.js'></script>
+<script type="text/javascript" src='data/res/scratch-js/js/jquery-ui.min.js'></script>
+<script type="text/javascript" src='data/res/scratch-js/js/rgbcolor.js'></script>
+<script type="text/javascript" src='data/res/scratch-js/js/canvg.js'></script>
+<script>
+
+basedir = "data/res/scratch-js/"  //needed for sb2-js resources
+
+function pageinit() {
+// nothing happening here... just keep on walking...
+}
+	
+</script>
+ <style type="text/css">
+	
+#blender {
+   width: 530px;
+   z-index: 98; 
+   left: 72px; 
+   position: absolute;  
+   top: 150px;   
+}   
+
+#mp4Player {
+   width: 530px;
+   z-index: 98; 
+   left: 72px; 
+   position: absolute;  
+   top: 140px;   
+}   	
+
+#sb2Player {   
+   background-color: #FFFFFF;
+   width: 500px;
+   z-index: 98; 
+   left: 60px; 
+   position: absolute;  
+   top: 118px;   
+   padding:30px 10px 30px 30px;
+   display:none;
+   pointer-events:none;
+}   
+
+#htmlPlayer {   
+   width: 530px;
+   height: 400px;   
+   z-index: 98; 
+   left: 55px; 
+   position: absolute;  
+   top: 140px;  
+   border: 10px solid black;
+}   
+
+body {
+   background-color: #FFFFFF;
+   margin: 0;
+   padding: 0;
+}
+#container {
+   position: relative; 
+   margin-left: auto ;
+   margin-right: auto ;
+   margin-top: 0 ;
+   width: 904px;
+   padding: 0px;
+}
+#tv_top {
+   z-index: 100; 
+   left: 0px; 
+   position: absolute;  
+   top: 0px;
+}
+#tv_left {
+   z-index: 100; 
+   left: 0px; 
+   position: absolute;  
+   top: 152px;
+}
+#tv_center {
+   z-index: 100; 
+   left: 598px; 
+   position: absolute; 
+   top: 152px;
+}
+#tv_right {
+   z-index: 100; 
+   right: 0px; 
+   position: absolute; 
+   top: 152px;
+}
+#tv_bottom {
+   z-index: 100; 
+   right: 0px; 
+   position: absolute; 
+   top: 532px;
+}
+#left, #right,#buttons {
+   position: absolute; 
+   height: 400px;
+   color: #000;
+   background-color: #FFFFFF;   
+}
+#left {
+   text-shadow: 0px 0px 3px #FFDC71;
+   font-family: sans-serif; 
+   font-weight:bold;
+   font-size: 12px;
+   background-color: #000000;  
+   color: #FFDC71;
+   text-align:center;
+   top: 145px;
+   left:65px;
+   width: 540px;   
+}
+
+a:link {color:#FFDC71;}      /* unvisited link */
+a:visited {color:#FFDC71;}  /* visited link */
+a:hover {color:#FFFFFF;}  /* mouse over link */
+a:active {color:#FFDC71;}   
+
+
+#buttons {
+   background-color: transparent;
+   z-index: 101; 
+   left:838px; 
+   top: 200px;
+   width:36px;
+   height:395px;   
+}
+
+.button {
+margin-bottom:5px;
+}
+
+#right {
+	background-color: #6b000e; 
+   top: 145px;
+   right:78px;   
+   width:210px;
+   height:395px;   
+   float: right;
+   text-align: left;
+   overflow: auto;
+   padding: 0%;   
+}
+#blackbg {
+   position: absolute; 
+   top: 135px;
+   left:40px;   
+   width:810px;
+   height:420px;   
+   background-color:#000;
+}
+
+
+#scrollitem {
+   position: relative; 
+   background-color: #990e00; 
+   width: 300px;
+   height: 60px;
+   top:10px;
+   margin: 5px 3px 5px 3px;  
+   padding: 2px 3px 2px 5px;
+
+   
+}
+
+#scrolltext {
+   line-height:15px;
+   width: 240px;
+   position: absolute;
+   text-align: left;
+   left: 40px;
+   top: 4px;
+   color:#000000;
+   font-family: sans-serif; 
+   background:#fff
+  /* for IE */
+   filter:alpha(opacity=90);
+  /* CSS3 standard */
+   opacity:0.9;
+}
+#scrolltext a:link, #scrolltext a:visited 
+{padding:5px;background:#fff;display:block;color:#000}
+* html #scrolltext a {width:100%}
+
+#scrolltext a:hover {background:#fee;}
+
+a {
+	text-decoration : none;
+}
+
+
+
+#scrolltitle {
+    font-weight:bolder;
+   font-size:13px;
+   line-height:13px;   
+   margin: 0px 0px 0px 0px;
+   padding: 2px 0px 0px 0px;
+   text-indent:2px;
+   }
+#scrollsubtitle {
+   line-height:10px;
+  font-size:10px;
+  text-indent:3px; 
+   }
+   
+.clear {
+   height: 0;
+   font-size: 1px;
+   margin: 0;
+   padding: 0;
+   line-height: 0;
+   clear: both;
+}
+
+#bc_step_1_result {
+    width: 500px;    
+	z-index:0;
+}
+
+.bc_step_1_failed {
+    background: url(data/res/step_1_fail_geta3d.png) top lef;
+	background-size: 100%;;
+}
+
+</style>
+  </head>
+  
+  <body onload="pageinit()">
+
+
+
+ <div id="container">
+   <div id="blackbg">
+   </div>
+  <img id="tv_top" src="data/res/byte_tv_top_w.png">
+  <img id="tv_left" src="data/res/byte_tv_left_w.png">
+
+  <img id="tv_center" src="data/res/byte_tv_center_w.png">
+  <img id="tv_right" src="data/res/byte_tv_right_w.png">
+  <img id="tv_bottom" src="data/res/byte_tv_bottom_w.png">
+  <div id="buttons">
+  <img class="button" id="projects_button" src="data/res/projectsbutton_down.png" width=30 onClick="menuList('projects')" style='cursor:hand;cursor:pointer'><br>
+  <img class="button" id="clay_button" src="data/res/claybutton.png" width=30 onClick="menuList('clay')" style='cursor:hand;cursor:pointer'><br>
+  <img class="button" id="games_button" src="data/res/gamesbutton.png" width=30 onClick="menuList('games')" style='cursor:hand;cursor:pointer'><br>
+  <img class="button" id="3D_button" src="data/res/3Dbutton.png" width=30 onClick="menuList('3D')" style='cursor:hand;cursor:pointer'><br>
+  <img class="button" id="musicvid_button" src="data/res/musicvidbutton.png" width=30 onClick="menuList('musicvid')" style='cursor:hand;cursor:pointer'><br>
+  <img class="button" id="2Dtablet_button" src="data/res/2Dtabletbutton.png" width=30 onClick="menuList('2Dtablet')" style='cursor:hand;cursor:pointer'><br>  
+  <img class="button" id="bytecamp_button" src="data/res/bytecamp.png" width=30 onClick="gotoMyURL()" style='cursor:hand;cursor:pointer'><br>
+  <img class="button" id="3Dgame_button" src="data/res/3Dgamebutton.png" width=30 onClick="menuList('3Dgame')" style='cursor:hand;cursor:pointer; display:none;'><br>
+  </div>  
+
+ 
+  
+ <div id="blender"> 
+
+ </div>
+ 
+  <div id="mp4Player"> 
+
+ </div>
+ 
+  <div id="htmlPlayer" >
+  </div> 
+  
+ <div id="sb2Player" style="z-index:4;background-color:white;">
+ <canvas id='scratch' width='486' height='391' tabindex='1' style='pointer-events:auto;'></canvas>
+  </div>
+  
+  
+  <div id="left">
+  
+
+  <br><br>Click on the projects to play -><br><br><br>Thank you for all your hard work at camp!<br>We hope we get to see you again soon.<br><br><a href="http://www.bytecamp.ca"><img src="data/res/bytecamplogo.png" width="300" height="71"><br>www.bytecamp.ca</a><br><br>1-888-808-2983<br><br><a href="mailto:dave@bytecamp.ca" alt="email us!">dave@bytecamp.ca</a><br><br><br><a href="https://twitter.com/intent/user?screen_name=byte_camp"><img src="data/res/twitter.jpg" width="83" height="45"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.facebook.com/plugins/likebox.php?href=https%3A%2F%2Fwww.facebook.com%2Fbytecamp&width=292&height=590&show_faces=true&colorscheme=light&stream=true&show_border=true&header=true&appId=118959584806641" ><img src="data/res/facebook.jpg" width="65" height="45"></a>&nbsp;&nbsp;&nbsp;<a href="http://www.youtube.com/subscription_center?add_user=bytecamp"><img src="data/res/youtubecom.jpg" width="60"height="45"></a>
+ 
+
+
+ </div><!-- left -->
+
+
+  
+  <div id="right">
+ 
+<!--  games  -->
+
+<div id='games' style='display:none'>
+<div id='scrollitem'><a href='javascript:newSWF("Alison - Wolf Run/index.html")'><img src="data/2Dgame/Alison - Wolf Run.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Alison - Wolf Run/index.html")'><span id='scrolltitle'>Wolf Run</span><br><span id='scrollsubtitle'>Alison</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Ben - Pacman/index.html")'><img src="data/2Dgame/Ben - Pacman.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Ben - Pacman/index.html")'><span id='scrolltitle'>Pacman</span><br><span id='scrollsubtitle'>Ben</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Damn Daniel - Sanctuary/index.html")'><img src="data/2Dgame/Damn Daniel - Sanctuary.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Damn Daniel - Sanctuary/index.html")'><span id='scrolltitle'>Sanctuary</span><br><span id='scrollsubtitle'>Damn Daniel</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Dank Barret - Rune Rush/index.html")'><img src="data/2Dgame/Dank Barret - Rune Rush.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Dank Barret - Rune Rush/index.html")'><span id='scrolltitle'>Rune Rush</span><br><span id='scrollsubtitle'>Dank Barret</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Ed - Jungle Survival/index.html")'><img src="data/2Dgame/Ed - Jungle Survival.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Ed - Jungle Survival/index.html")'><span id='scrolltitle'>Jungle Survival</span><br><span id='scrollsubtitle'>Ed</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Ethan - Caterpies Adventure/index.html")'><img src="data/2Dgame/Ethan - Caterpies Adventure.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Ethan - Caterpies Adventure/index.html")'><span id='scrolltitle'>Caterpies Adventure</span><br><span id='scrollsubtitle'>Ethan</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Ethan - Space Monsters/index.html")'><img src="data/2Dgame/Ethan - Space Monsters.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Ethan - Space Monsters/index.html")'><span id='scrolltitle'>Space Monsters</span><br><span id='scrollsubtitle'>Ethan</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Isabella - Jump Jump Fall/index.html")'><img src="data/2Dgame/Isabella - Jump Jump Fall.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Isabella - Jump Jump Fall/index.html")'><span id='scrolltitle'>Jump Jump Fall</span><br><span id='scrollsubtitle'>Isabella</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Jack - Space Hopper/index.html")'><img src="data/2Dgame/Jack - Space Hopper.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Jack - Space Hopper/index.html")'><span id='scrolltitle'>Space Hopper</span><br><span id='scrollsubtitle'>Jack</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Jelly Josh -  Mtt/index.html")'><img src="data/2Dgame/Jelly Josh -  Mtt.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Jelly Josh -  Mtt/index.html")'><span id='scrolltitle'> Mtt</span><br><span id='scrollsubtitle'>Jelly Josh</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Justin - Diepio Smashers Conquest/index.html")'><img src="data/2Dgame/Justin - Diepio Smashers Conquest.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Justin - Diepio Smashers Conquest/index.html")'><span id='scrolltitle'>Diepio Smashers Conquest</span><br><span id='scrollsubtitle'>Justin</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Liam - The Quest of Reposession/index.html")'><img src="data/2Dgame/Liam - The Quest of Reposession.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Liam - The Quest of Reposession/index.html")'><span id='scrolltitle'>The Quest of Reposession</span><br><span id='scrollsubtitle'>Liam</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Luke - A Spaceships Final Mission/index.html")'><img src="data/2Dgame/Luke - A Spaceships Final Mission.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Luke - A Spaceships Final Mission/index.html")'><span id='scrolltitle'>A Spaceships Final Mission</span><br><span id='scrollsubtitle'>Luke</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Matthew - The Terrible  Four The Game/index.html")'><img src="data/2Dgame/Matthew - The Terrible  Four The Game.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Matthew - The Terrible  Four The Game/index.html")'><span id='scrolltitle'>The Terrible  Four The Game</span><br><span id='scrollsubtitle'>Matthew</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Michael - Sea Chicken/index.html")'><img src="data/2Dgame/Michael - Sea Chicken.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Michael - Sea Chicken/index.html")'><span id='scrolltitle'>Sea Chicken</span><br><span id='scrollsubtitle'>Michael</span></a></div></div>
+</div>
+
+
+<!--  2Dtablet  -->
+<div id='2Dtablet' style='display:none'>
+<div id='scrollitem'><a href='javascript:newSWF("Alexia - The Bunny and the Carrot (2).mp4")'><img src="data/2Dtablet/Alexia - The Bunny and the Carrot (2).jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Alexia - The Bunny and the Carrot (2).mp4")'><span id='scrolltitle'>Alexia </span><br><span id='scrollsubtitle'> The Bunny and the Carrot (2)</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Andras Movie -  Prey Thief 1.mp4")'><img src="data/2Dtablet/Andras Movie -  Prey Thief 1.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Andras Movie -  Prey Thief 1.mp4")'><span id='scrolltitle'>Andras Movie </span><br><span id='scrollsubtitle'>  Prey Thief 1</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Ava -  Super 4.mp4")'><img src="data/2Dtablet/Ava -  Super 4.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Ava -  Super 4.mp4")'><span id='scrolltitle'>Ava </span><br><span id='scrollsubtitle'>  Super 4</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Baran - A Trip to the HQ.mp4")'><img src="data/2Dtablet/Baran - A Trip to the HQ.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Baran - A Trip to the HQ.mp4")'><span id='scrolltitle'>Baran </span><br><span id='scrollsubtitle'> A Trip to the HQ</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Ember -  It.mp4")'><img src="data/2Dtablet/Ember -  It.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Ember -  It.mp4")'><span id='scrolltitle'>Ember </span><br><span id='scrollsubtitle'>  It</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Island Savings Centre - Super Awesome.mp4")'><img src="data/2Dtablet/Island Savings Centre - Super Awesome.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Island Savings Centre - Super Awesome.mp4")'><span id='scrolltitle'>Island Savings Centre </span><br><span id='scrollsubtitle'> Super Awesome</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Jordyn -  Bad Animation.mp4")'><img src="data/2Dtablet/Jordyn -  Bad Animation.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Jordyn -  Bad Animation.mp4")'><span id='scrolltitle'>Jordyn </span><br><span id='scrollsubtitle'>  Bad Animation</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Katherine -  Super Snail.mp4")'><img src="data/2Dtablet/Katherine -  Super Snail.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Katherine -  Super Snail.mp4")'><span id='scrolltitle'>Katherine </span><br><span id='scrollsubtitle'>  Super Snail</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Masked Malayah - Wifi Search.mp4")'><img src="data/2Dtablet/Masked Malayah - Wifi Search.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Masked Malayah - Wifi Search.mp4")'><span id='scrolltitle'>Masked Malayah </span><br><span id='scrollsubtitle'> Wifi Search</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Miki -  the Cat.mp4")'><img src="data/2Dtablet/Miki -  the Cat.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Miki -  the Cat.mp4")'><span id='scrolltitle'>Miki </span><br><span id='scrollsubtitle'>  the Cat</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Quinna -  Macho Nacho.mp4")'><img src="data/2Dtablet/Quinna -  Macho Nacho.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Quinna -  Macho Nacho.mp4")'><span id='scrolltitle'>Quinna </span><br><span id='scrollsubtitle'>  Macho Nacho</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Rhea - Squeakys Revenge.mp4")'><img src="data/2Dtablet/Rhea - Squeakys Revenge.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Rhea - Squeakys Revenge.mp4")'><span id='scrolltitle'>Rhea </span><br><span id='scrollsubtitle'> Squeakys Revenge</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Shane -  Domination of the Perogi.mp4")'><img src="data/2Dtablet/Shane -  Domination of the Perogi.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Shane -  Domination of the Perogi.mp4")'><span id='scrolltitle'>Shane </span><br><span id='scrollsubtitle'>  Domination of the Perogi</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Student - The Adventures of Matt.mp4")'><img src="data/2Dtablet/Student - The Adventures of Matt.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Student - The Adventures of Matt.mp4")'><span id='scrolltitle'>Student </span><br><span id='scrollsubtitle'> The Adventures of Matt</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Super Sean -  Super Slug.mp4")'><img src="data/2Dtablet/Super Sean -  Super Slug.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Super Sean -  Super Slug.mp4")'><span id='scrolltitle'>Super Sean </span><br><span id='scrollsubtitle'>  Super Slug</span></a></div></div>
+</div>
+
+
+<!--  3DAnimation  -->
+<div id='3D' style='display:none'>
+
+<div id='scrollitem'><a href='javascript:newSWF("Champlain Heights Community Ctr - How to Be A Good Neighbor.mp4")'><img src="data/3Danimation/Champlain Heights Community Ctr - How to Be A Good Neighbor.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Champlain Heights Community Ctr - How to Be A Good Neighbor.mp4")'><span id='scrolltitle'>Champlain Heights Community Ctr </span><br><span id='scrollsubtitle'> How to Be A Good Neighbor</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Harry Jerome - Crown Crisis.mp4")'><img src="data/3Danimation/Harry Jerome - Crown Crisis.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Harry Jerome - Crown Crisis.mp4")'><span id='scrolltitle'>Harry Jerome </span><br><span id='scrollsubtitle'> Crown Crisis</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Hillcrest -  Jungle Rumble Blast.mp4")'><img src="data/3Danimation/Hillcrest -  Jungle Rumble Blast.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Hillcrest -  Jungle Rumble Blast.mp4")'><span id='scrolltitle'>Hillcrest </span><br><span id='scrollsubtitle'>  Jungle Rumble Blast</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Oak Bay - The Protest Against Nubism.mp4")'><img src="data/3Danimation/Oak Bay - The Protest Against Nubism.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Oak Bay - The Protest Against Nubism.mp4")'><span id='scrolltitle'>Oak Bay </span><br><span id='scrollsubtitle'> The Protest Against Nubism</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Panorama - TV Trouble.mp4")'><img src="data/3Danimation/Panorama - TV Trouble.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Panorama - TV Trouble.mp4")'><span id='scrolltitle'>Panorama </span><br><span id='scrollsubtitle'> TV Trouble</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Saanich Cultural Ctr - Dino Daze.mp4")'><img src="data/3Danimation/Saanich Cultural Ctr - Dino Daze.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Saanich Cultural Ctr - Dino Daze.mp4")'><span id='scrolltitle'>Saanich Cultural Ctr </span><br><span id='scrollsubtitle'> Dino Daze</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Smus - Revenge of the Cactus.mp4")'><img src="data/3Danimation/Smus - Revenge of the Cactus.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Smus - Revenge of the Cactus.mp4")'><span id='scrolltitle'>Smus </span><br><span id='scrollsubtitle'> Revenge of the Cactus</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Trout Lake Community Ctr - Pokemon Civil War.mp4")'><img src="data/3Danimation/Trout Lake Community Ctr - Pokemon Civil War.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Trout Lake Community Ctr - Pokemon Civil War.mp4")'><span id='scrolltitle'>Trout Lake Community Ctr </span><br><span id='scrollsubtitle'> Pokemon Civil War</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("West Van CC - House of Horrors.mp4")'><img src="data/3Danimation/West Van CC - House of Horrors.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("West Van CC - House of Horrors.mp4")'><span id='scrolltitle'>West Van CC </span><br><span id='scrollsubtitle'> House of Horrors</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("West Van Community Center - Outnumbered_ The Ice Cream Job.mp4")'><img src="data/3Danimation/West Van Community Center - Outnumbered_ The Ice Cream Job.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("West Van Community Center - Outnumbered_ The Ice Cream Job.mp4")'><span id='scrolltitle'>West Van Community Center </span><br><span id='scrollsubtitle'> Outnumbered_ The Ice Cream Job</span></a></div></div>
+</div>
+
+
+<!--  3Dgame DOESNT WORK -->
+<div id='3Dgame' style='display:none'>
+<div id='scrollitem'><a href='javascript:newSWF("Alex - Boom Goes the Factories.blend")'><img src="data/3Dgame/Alex - Boom Goes the Factories.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Alex - Boom Goes the Factories.blend")'><span id='scrolltitle'> Boom Goes the Factories</span><br><span id='scrollsubtitle'>Alex</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Alister - Space Pickup.blend")'><img src="data/3Dgame/Alister - Space Pickup.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Alister - Space Pickup.blend")'><span id='scrolltitle'> Space Pickup</span><br><span id='scrollsubtitle'>Alister</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Ben - Balloon Popping Game.blend")'><img src="data/3Dgame/Ben - Balloon Popping Game.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Ben - Balloon Popping Game.blend")'><span id='scrolltitle'> Balloon Popping Game</span><br><span id='scrollsubtitle'>Ben</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Callum - Zombie Apocalypse.blend")'><img src="data/3Dgame/Callum - Zombie Apocalypse.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Callum - Zombie Apocalypse.blend")'><span id='scrolltitle'> Zombie Apocalypse</span><br><span id='scrollsubtitle'>Callum</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Chris - Alien Defence.blend")'><img src="data/3Dgame/Chris - Alien Defence.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Chris - Alien Defence.blend")'><span id='scrolltitle'> Alien Defence</span><br><span id='scrollsubtitle'>Chris</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Connor - Marble Maze.blend")'><img src="data/3Dgame/Connor - Marble Maze.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Connor - Marble Maze.blend")'><span id='scrolltitle'> Marble Maze</span><br><span id='scrollsubtitle'>Connor</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Emma - Before Midnight.blend")'><img src="data/3Dgame/Emma - Before Midnight.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Emma - Before Midnight.blend")'><span id='scrolltitle'> Before Midnight</span><br><span id='scrollsubtitle'>Emma</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Erik - Star Wars Republic Mission.blend")'><img src="data/3Dgame/Erik - Star Wars Republic Mission.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Erik - Star Wars Republic Mission.blend")'><span id='scrolltitle'> Star Wars Republic Mission</span><br><span id='scrollsubtitle'>Erik</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Ethan - Bob and the Pusel of Doom.blend")'><img src="data/3Dgame/Ethan - Bob and the Pusel of Doom.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Ethan - Bob and the Pusel of Doom.blend")'><span id='scrolltitle'> Bob and the Pusel of Doom</span><br><span id='scrollsubtitle'>Ethan</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Ethan - Radioactive.blend")'><img src="data/3Dgame/Ethan - Radioactive.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Ethan - Radioactive.blend")'><span id='scrolltitle'> Radioactive</span><br><span id='scrollsubtitle'>Ethan</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Hayden - Dodgeball.blend")'><img src="data/3Dgame/Hayden - Dodgeball.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Hayden - Dodgeball.blend")'><span id='scrolltitle'> Dodgeball</span><br><span id='scrollsubtitle'>Hayden</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Jaden - Jadens Game.blend")'><img src="data/3Dgame/Jaden - Jadens Game.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Jaden - Jadens Game.blend")'><span id='scrolltitle'> Jadens Game</span><br><span id='scrollsubtitle'>Jaden</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Jady -  Treasure Hunt.blend")'><img src="data/3Dgame/Jady - Treasure Hunt.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Jady -  Treasure Hunt.blend")'><span id='scrolltitle'>  Treasure Hunt</span><br><span id='scrollsubtitle'>Jady</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Jesse - Biplane Battle.blend")'><img src="data/3Dgame/Jesse - Biplane Battle.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Jesse - Biplane Battle.blend")'><span id='scrolltitle'> Biplane Battle</span><br><span id='scrollsubtitle'>Jesse</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Joyce - Badminton Rally.blend")'><img src="data/3Dgame/Joyce - Badminton Rally.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Joyce - Badminton Rally.blend")'><span id='scrolltitle'> Badminton Rally</span><br><span id='scrollsubtitle'>Joyce</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Kai - Arrow Dynamics.blend")'><img src="data/3Dgame/Kai - Arrow Dynamics.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Kai - Arrow Dynamics.blend")'><span id='scrolltitle'> Arrow Dynamics</span><br><span id='scrollsubtitle'>Kai</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Olivia -  Hi Im A Car.blend")'><img src="data/3Dgame/Olivia - Hi Im A Car.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Olivia -  Hi Im A Car.blend")'><span id='scrolltitle'>  Hi Im A Car</span><br><span id='scrollsubtitle'>Olivia</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Owen -  Catch the Crystals.blend")'><img src="data/3Dgame/Owen - Catch the Crystals.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Owen -  Catch the Crystals.blend")'><span id='scrolltitle'>  Catch the Crystals</span><br><span id='scrollsubtitle'>Owen</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Paul - Healthy Hero Carrot.blend")'><img src="data/3Dgame/Paul - Healthy Hero Carrot.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Paul - Healthy Hero Carrot.blend")'><span id='scrolltitle'> Healthy Hero Carrot</span><br><span id='scrollsubtitle'>Paul</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Quinn - Tubing Simulator 2014.blend")'><img src="data/3Dgame/Quinn - Tubing Simulator 2014.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Quinn - Tubing Simulator 2014.blend")'><span id='scrolltitle'> Tubing Simulator 2014</span><br><span id='scrollsubtitle'>Quinn</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Sarah - Scuba Diver.blend")'><img src="data/3Dgame/Sarah - Scuba Diver.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Sarah - Scuba Diver.blend")'><span id='scrolltitle'> Scuba Diver</span><br><span id='scrollsubtitle'>Sarah</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Sian - Egg Hunt.blend")'><img src="data/3Dgame/Sian - Egg Hunt.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Sian - Egg Hunt.blend")'><span id='scrolltitle'> Egg Hunt</span><br><span id='scrollsubtitle'>Sian</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Thomas - Violin Simulator.blend")'><img src="data/3Dgame/Thomas - Violin Simulator.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Thomas - Violin Simulator.blend")'><span id='scrolltitle'> Violin Simulator</span><br><span id='scrollsubtitle'>Thomas</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Vanessa - Night of the Apocalypse.blend")'><img src="data/3Dgame/Vanessa - Night of the Apocalypse.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Vanessa - Night of the Apocalypse.blend")'><span id='scrolltitle'> Night of the Apocalypse</span><br><span id='scrollsubtitle'>Vanessa</span></a></div></div>
+</div>
+
+
+<!--  clay  -->
+<div id='clay' style='display:none'>
+<div id='scrollitem'><a href='javascript:newSWF("Abby and Kyler -  Run Maple Run.mp4")'><img src="data/claymation/Abby and Kyler -  Run Maple Run.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Abby and Kyler -  Run Maple Run.mp4")'><span id='scrolltitle'>Abby and Kyler </span><br><span id='scrollsubtitle'>  Run Maple Run</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Amy _ Raeya -  Frog Well.mp4")'><img src="data/claymation/Amy _ Raeya -  Frog Well.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Amy _ Raeya -  Frog Well.mp4")'><span id='scrolltitle'>Amy and Raeya </span><br><span id='scrollsubtitle'>  Frog Well</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Audrianna _ Katherine - A K Marshmellow.mp4")'><img src="data/claymation/Audrianna _ Katherine - A K Marshmellow.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Audrianna _ Katherine - A K Marshmellow.mp4")'><span id='scrolltitle'>Audrianna and Katherine </span><br><span id='scrollsubtitle'> A K Marshmellow</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Carson _ Ian - King Steve and The Evil Dragon.mp4")'><img src="data/claymation/Carson _ Ian - King Steve and The Evil Dragon.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Carson _ Ian - King Steve and The Evil Dragon.mp4")'><span id='scrolltitle'>Carson and Ian </span><br><span id='scrollsubtitle'> King Steve and The Evil Dragon</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Jack _ James -  the Ender Adventure.mp4")'><img src="data/claymation/Jack _ James -  the Ender Adventure.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Jack _ James -  the Ender Adventure.mp4")'><span id='scrolltitle'>Jack and James </span><br><span id='scrollsubtitle'>  the Ender Adventure</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Lily _ Maddy -  Adventures in Foodland.mp4")'><img src="data/claymation/Lily _ Maddy -  Adventures in Foodland.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Lily _ Maddy -  Adventures in Foodland.mp4")'><span id='scrolltitle'>Lily and Maddy </span><br><span id='scrollsubtitle'>  Adventures in Foodland</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Logan _ Cameron -  the Whale and the Sea of Cacti.mp4")'><img src="data/claymation/Logan _ Cameron -  the Whale and the Sea of Cacti.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Logan _ Cameron -  the Whale and the Sea of Cacti.mp4")'><span id='scrolltitle'>Logan and Cameron </span><br><span id='scrollsubtitle'>  the Whale and the Sea of Cacti</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Nat _ Nairi -  Absolutely Purr - Fect.mp4")'><img src="data/claymation/Nat _ Nairi -  Absolutely Purr - Fect.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Nat _ Nairi -  Absolutely Purr - Fect.mp4")'><span id='scrolltitle'>Nat and Nairi </span><br><span id='scrollsubtitle'>  Absolutely P</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Sue _ James - Gingerbread Mans Life.mp4")'><img src="data/claymation/Sue _ James - Gingerbread Mans Life.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Sue _ James - Gingerbread Mans Life.mp4")'><span id='scrolltitle'>Sue and James </span><br><span id='scrollsubtitle'> Gingerbread Mans Life</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Tiaan _ Emily - Attack of the Cat.mp4")'><img src="data/claymation/Tiaan _ Emily - Attack of the Cat.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Tiaan _ Emily - Attack of the Cat.mp4")'><span id='scrolltitle'>Tiaan and Emily </span><br><span id='scrollsubtitle'> Attack of the Cat</span></a></div></div>
+</div>
+
+
+<!--  musicvid  -->
+<div id='musicvid' style='display:none'>
+<div id='scrollitem'><a href='javascript:newSWF("A Dont Know Austin - Movie.mp4")'><img src="data/musicvideo/A Dont Know Austin - Movie.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("A Dont Know Austin - Movie.mp4")'><span id='scrolltitle'>A Dont Know Austin</span><br><span id='scrollsubtitle'>Movie</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Evan - Spring time Swing.mp4")'><img src="data/musicvideo/Evan - Spring time Swing.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Evan - Spring time Swing.mp4")'><span id='scrolltitle'>Evan</span><br><span id='scrollsubtitle'>Spring time Swing</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Josh -  Awesomeness.mp4")'><img src="data/musicvideo/Josh -  Awesomeness.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Josh -  Awesomeness.mp4")'><span id='scrolltitle'>Josh</span><br><span id='scrollsubtitle'> Awesomeness</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Julie - The Run Away Plum.mp4")'><img src="data/musicvideo/Julie - The Run Away Plum.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Julie - The Run Away Plum.mp4")'><span id='scrolltitle'>Julie</span><br><span id='scrollsubtitle'>The Run Away Plum</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Kieran - Run.mp4")'><img src="data/musicvideo/Kieran - Run.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Kieran - Run.mp4")'><span id='scrolltitle'>Kieran</span><br><span id='scrollsubtitle'>Run</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Kiyanah -  Supergirl and Sidekick.mp4")'><img src="data/musicvideo/Kiyanah -  Supergirl and Sidekick.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Kiyanah -  Supergirl and Sidekick.mp4")'><span id='scrolltitle'>Kiyanah</span><br><span id='scrollsubtitle'> Supergirl and Sidekick</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Rajan - Failure.mp4")'><img src="data/musicvideo/Rajan - Failure.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Rajan - Failure.mp4")'><span id='scrolltitle'>Rajan</span><br><span id='scrollsubtitle'>Failure</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Soie -  B.mp4")'><img src="data/musicvideo/Soie -  B.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Soie -  B.mp4")'><span id='scrolltitle'>Soie</span><br><span id='scrollsubtitle'> B</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Soldis -  See It Hear It.mp4")'><img src="data/musicvideo/Soldis -  See It Hear It.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Soldis -  See It Hear It.mp4")'><span id='scrolltitle'>Soldis</span><br><span id='scrollsubtitle'> See It Hear It</span></a></div></div>
+<div id='scrollitem'><a href='javascript:newSWF("Thomas - Dance.mp4")'><img src="data/musicvideo/Thomas - Dance.jpg" width='60' height='48'></a><div id='scrolltext'><a href='javascript:newSWF("Thomas - Dance.mp4")'><span id='scrolltitle'>Thomas</span><br><span id='scrollsubtitle'>Dance</span></a></div></div>
+</div>
+

@@ -14,28 +14,28 @@
                 location.reload();
             </script>
         {% endif %}
-
+        
     </head>
 
     <body>
         <div class="container">
-            <div class="row">
-                <div class="col-lg-8 col-md-10 col-sm-11 col-xs-12 col-center" id="manual">
-                    <h2>Byte Camp USB Uploader</h2>
+            <div class="row classWithPad">
+                <div class="col-xs-10 col-md-8 col-lg-6 col-center" id="manual">
+                    <h3>Byte Camp USB Uploader</h3>
                     <form id="upload-file" method="post" enctype="multipart/form-data"></form>
-                    <div class="form-group classWithPad">
+                    <div class="form-group">
                         <h5>Student's Name(s):</h5>
-                        <input form="upload-file" type="text" class="settings" id="student" name="student" value="Student" style="width:400px;">
+                        <input form="upload-file" type="text" class="settings" id="student" name="student" value="Student" style="width:300px;">
                     </div>
 
-                    <div class="form-group classWithPad">
+                    <div class="form-group">
                         <h5>Camp:</h5>
-                        <select form="main" class="settings" name="camp" style="width:400px;">
+                        <select form="main" class="settings" name="camp" style="width:300px;">
                             <option value="none" selected>**MUST DO:</option>
                         </select>
                     </div>
 
-                    <div class="form-group classWithPad">
+                    <div class="form-group">
                         <h5>Please choose your camp and find your work:</h5>
                         <br><br><br>
                         <div class="input-group col-xs-10 col-center text-center">
@@ -47,11 +47,11 @@
                         </div>
                     </div>
 
-                    <div class="form-group classWithPad">
+                    <div class="form-group">
                         <h5>USB Drive Contents:</h5>
                         <br><br>
-                        <div class="input-group col-xs-10 col-center">
-                            <div style="background-color:#fff; border:1px solid #808080;">
+                        <div class="input-group col-xs-12 col-center">
+                            <div class="contents">
                                 <div>Capacity: {{disk_size}} MB ({{disk_avail}} MB Free)</div>
                                 <div>Player: {{player_loaded}}</div>
                                 <div>'Best Of's: {{disk_used}} MB Loaded</div>
@@ -61,14 +61,21 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="form-group classWithPad">
+                    <div class="form-group">
                         <h5>Preview USB Player:</h5>
                         <button class="settings" name="preview" id="preview">PREVIEW</button>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Footer -->
+        <footer>
+            <div class="container text-center">
+                <img src="../static/img/logo-foot.png" style="width:20%"/>
+                <p>Copyright &copy; Byte Camp 2017</p>
+            </div>
+        </footer>
     </body>
 
     <link href="../static/css/bootstrap.min.css" rel="stylesheet">

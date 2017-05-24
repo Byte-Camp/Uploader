@@ -1,5 +1,5 @@
 body {
-    background-color:#ffffcc;
+    background-color:#FFDF70;
     padding:0px;
 }
 
@@ -17,28 +17,28 @@ h5 {
 
 .classWithPad {
     padding:25px;
+    margin:10px;
+    padding-top:0px;
 }
 
 .uploaded {
     position:relative;
-    height:64px;
+    height:48px;
     color:#4f8a10;
     background-color:#dff2bf;
+    padding:5px;
 }
 
 .uploaded-file {
     display:inline;
     position:absolute;
-    left:64px;
-    padding:10px;
+    left:48px;
 }
 
 .uploaded-student {
     position:absolute;
-    left:64px;
+    left:48px;
     bottom:0px;
-    padding:10px;
-    padding-bottom:5px;
 }
 
 .uploaded-remove {
@@ -58,6 +58,12 @@ h5 {
     background-color:#000;
     left:0px;
     top:0px;
-    width:64px;
-    height:64px;
+    width:48px;
+    height:48px;
+}
+
+.contents {
+    background-color:#fff;
+    border:1px solid #808080;
+    font-size:10px;
 }
